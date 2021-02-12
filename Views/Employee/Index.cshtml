@@ -1,0 +1,105 @@
+﻿<div class="col-md-12" style="float:right;">
+    @Html.ActionLink("Add Employee", 
+                 "Create", 
+                 "Employee", 
+                 null, 
+                 null 
+                 )
+
+</div>
+<div class="text-center">
+    <h1 class="display-4">List of the employee</h1>
+    Employee
+    <select asp-items="@ViewBag.EmployeeList" id="employee" name="employee" class="form-control" onchange="fnOnEmployeeSelect(this)">
+        <option value="">-Select Employee-</option>
+    </select>
+    <table id="tblEmployee" class="table">
+        <caption>Emplopyee Details</caption>
+    </table>
+</div>
+
+
+<div id="pay">
+
+</div>
+<input type="hidden" id="employee-type" name="employee-type" value="">
+<script>
+
+    function fnOnEmployeeSelect(ele) {
+
+        var baseUrl = fnGetServerpath();
+        var apiPath = "Employee/GetEmployee";
+        var url = baseUrl + apiPath + "/" + ele.value
+        console.log(url);
+        $('#tblEmployee').html('');
+        $.ajax({
+            type: "Get",
+            url: url,
+            success: function (data) {
+                var str = '<tr><td>Name</td><td>' + data.name + '</td></tr>';
+                str += '<tr><td>Birthdate </td><td>' + data.birthdate + '</td></tr>';
+                str += '<tr><td>TIN</td><td>' + data.tin+'</td></tr>';
+                
+                str += '<tr><td>Employee Type</td><td>' + data.employeeType + '</td></tr>';
+                if (data.employeeType == "REGULAR") {
+                    str += '<tr><td>Salary Per Month</td><td>' + data.salaryPm + '</td></tr>';
+                    str += '<tr><td>Enter Absent Days</td><td><input name="user-input" id="user-input" /></td></tr>';
+                }else {
+                    str += '<tr><td>Rate Per day</td><td>' + data.ratePerDay + '</td></tr>';
+                    str += '<tr><td>Enter Working Days</td><td><input name="user-input" id="user-input" /></td></tr>';
+                }
+                str += '<tr><td colspan="2"><input type="button" value="Calculate Salary" onclick="fnGetSalary();"/></td></tr>';
+
+
+                console.log(str);
+                $('#tblEmployee').append(str);
+                $('#employee-type').val(data.employeeType);
+            }
+        });
+    }
+
+    function fnGetSalary() {
+
+        var baseUrl = fnGetServerpath();
+        var apiPath = "Employee/GetSalary";
+        var userInputVale = $('#user-input').val();
+        var employeeId = $('#employee').val();
+        var employeeType = $('#employee-type').val();
+        var url = baseUrl + apiPath;
+
+        var json = {
+            id: employeeId,
+            value: userInputVale,
+            employeeType: employeeType
+        };
+
+        $.ajax({
+            type: "Get",
+            url: url,
+            data: json,
+            success: function (data) {
+                console.log(data);
+                var str = '<table class="table">';
+
+                if (data.work_type == "REGULAR") {
+                    str += '<tr><td>Total Salary</td><td>' + data.totol_amount + '</td></tr>';
+                    str += '<tr><td>Tax Deduction</td><td>' + data.tax_deduction + '</td></tr>';
+                    str += '<tr><td>Absents</td><td>' + data.absents + '</td></tr>';
+                    str += '<tr><td>Absent Deduction</td><td>' + data.absent_deduction + '</td></tr>';
+                    str += '<tr><td>Net Payable</td><td>' + data.net_payable + '</td></tr>';
+                } else {
+                    str += '<tr><td>Total Working days</td><td>' + data.days_worked + '</td></tr>';
+                    str += '<tr><td>Rate Per Day</td><td>' + data.rate_perday + '</td></tr>';
+                    str += '<tr><td>Net Payable</td><td>' + data.net_payable + '</td></tr>';
+                }
+
+                str += '</table>';
+                $('#pay').html(str);
+            }
+        });
+    }
+
+    function fnGetServerpath() {
+        return window.location.hostname == "localhost" ? window.location.protocol + "//" + window.location.host + "/" : window.location.protocol + "//" + window.location.host + "//"
+    }
+</script>

@@ -1,0 +1,108 @@
+﻿
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Add Employee</h1>
+
+@Html.BeginForm("Create", "Employee", FormMethod.Post, new { @class = "my_form" , enctype = "multipart/form-data", onsubmit = " return validateForm()" })) {
+
+<table class="table">
+    <tr>
+        <td>Name</td>
+        <td><input type="text" name="name" id="name" placeholder="Enter name" /></td>
+    </tr>
+    <tr>
+        <td> Birth date</td>
+        <td><input type="date" name="Birthdate" id="Birthdate" placeholder="Enter birthday" /></td>
+    </tr>
+    <tr>
+        <td>Tin </td>
+        <td><input type="text" name="TIN" id="TIN" placeholder="Enter Tin" /></td>
+    </tr>
+    <tr>
+        <td>Employee Type </td>
+        <td>
+            <select id="EmployeeType" name="EmployeeType" class="form-control" onchange="fnOnEmployeeTypeChange(this)">
+                <option value="0">-Select Employee Type-</option>
+                <option value="REGULAR">REGULAR</option>
+                <option value="CONTRACT">CONTRACT</option>
+            </select>
+        </td>
+    </tr>
+    <tr id="regular">
+        <td>Salary Pm</td>
+        <td><input type="text" name="SalaryPm" id="SalaryPm" placeholder="Enter salary pm" /></td>
+    </tr>
+    <tr id="contract">
+        <td>Rate per day</td>
+        <td><input type="text" name="RatePerDay" id="RatePerDay" placeholder="Enter rate per day" /></td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <input type="submit" value="Add Employee" />
+        </td>
+        </tr>
+</table>
+
+<script>
+
+    function validateForm() {
+
+        var isValid = true;
+        var message = '';
+
+        var name = $('#name').val();
+        var birthdate = $('#Birthdate').val();
+        var tin = $('#TIN').val();
+        var employeeType = $('#EmployeeType').val();
+        var salaryPm = $('#SalaryPm').val();
+        var ratePerDay = $('#RatePerDay').val();
+
+        if (!name) {
+            message += "Please enter name \r\n";
+            isValid = false;
+        }
+        if (!birthdate) {
+            message += "Please enter birthdate \r\n";
+            isValid = false;
+        }
+        if (!tin) {
+            message += "Please enter tin \r\n";
+            isValid = false;
+        }
+        if (employeeType == 0) {
+            message += "Please select employee type \r\n";
+            isValid = false;
+        } else {
+            if (employeeType == "REGULAR") {
+                if (!salaryPm) {
+                    message += "Please enter salary per month\r\n";
+                    isValid = false;
+                }
+            } else {
+                if (!ratePerDay) {
+                    message += "Please enter rate per day\r\n";
+                    isValid = false;
+                }
+            }
+        }
+
+        if (!isValid) {
+            alert(message);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function fnOnEmployeeTypeChange(ele) {
+        if (ele.value == "REGULAR") {
+            $('#regular').show();
+            $('#contract').hide();
+        } else {
+            $('#regular').hide();
+            $('#contract').show();
+        }
+    }
+</script>
